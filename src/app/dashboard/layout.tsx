@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { withBasePath } from "@/lib/paths";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 export default function DashboardLayout({
@@ -20,10 +19,12 @@ export default function DashboardLayout({
     const supabase = createClient();
 
     supabase.auth.getUser().then(({ data: { user } }) => {
+      // router.replace() van next/navigation voegt de basePath zelf toe,
+      // dus hier bewust GEEN withBasePath gebruiken (anders dubbele basePath -> 404).
       if (!user && !isLoginPage) {
-        router.replace(withBasePath("/dashboard/login"));
+        router.replace("/dashboard/login");
       } else if (user && isLoginPage) {
-        router.replace(withBasePath("/dashboard"));
+        router.replace("/dashboard");
       }
       setChecking(false);
     });
