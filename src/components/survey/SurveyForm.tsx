@@ -4,10 +4,10 @@ import { useCallback, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   SOURCE_OPTIONS,
-  PURCHASE_REASON_OPTIONS,
-  SHOW_PURCHASE_REASON,
+  WEBSITE_INFLUENCE_OPTIONS,
   THANK_YOU_DURATION_MS,
 } from "@/lib/constants";
+import { SurveyHeader } from "./SurveyHeader";
 import { TouchButton } from "./TouchButton";
 import { QuestionSection } from "./QuestionSection";
 import { ThankYouScreen } from "./ThankYouScreen";
@@ -19,8 +19,7 @@ type FormState = "idle" | "submitting" | "thankyou" | "error";
 
 const initialForm: SurveyFormData = {
   source: null,
-  visitedWebsite: null,
-  purchaseReason: null,
+  websiteInfluence: null,
 };
 
 export function SurveyForm() {
@@ -42,8 +41,8 @@ export function SurveyForm() {
     if (!form.source) {
       newErrors.source = "Selecteer alstublieft hoe u bij ons terechtgekomen bent.";
     }
-    if (form.visitedWebsite === null) {
-      newErrors.website = "Selecteer alstublieft Ja of Nee.";
+    if (!form.websiteInfluence) {
+      newErrors.website = "Selecteer alstublieft welke rol de website speelde.";
     }
 
     setErrors(newErrors);
@@ -60,8 +59,9 @@ export function SurveyForm() {
       const supabase = createClient();
       const { error } = await supabase.from("survey_answers").insert({
         source: form.source!,
-        visited_website: form.visitedWebsite!,
-        purchase_reason: SHOW_PURCHASE_REASON ? form.purchaseReason : null,
+        visited_website: form.websiteInfluence !== "not_visited",
+        website_influence: form.websiteInfluence!,
+        purchase_reason: null,
       });
 
       if (error) {
@@ -69,8 +69,6 @@ export function SurveyForm() {
       }
 
       setState("thankyou");
-
-      // Na bedankscherm: reset en klaar voor volgende klant
       setTimeout(resetForm, THANK_YOU_DURATION_MS);
     } catch {
       setState("error");
@@ -85,116 +83,73 @@ export function SurveyForm() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-6 py-8 md:px-10 md:py-12">
-      {/* Header */}
-      <header className="text-center">
-        <div className="mb-2 inline-block rounded-lg bg-dcq-red px-4 py-1">
-          <span className="text-sm font-bold uppercase tracking-widest text-white">
-            DCQ Bikes
-          </span>
-        </div>
-        <h1 className="text-3xl font-bold text-dcq-black md:text-4xl">
-          Korte enquête
-        </h1>
-        <p className="mt-2 text-lg text-gray-600">
-          Heeft u 5 seconden? Uw antwoord helpt ons enorm.
-        </p>
-      </header>
+    <div className="flex min-h-screen flex-col bg-dcq-gray">
+      <SurveyHeader />
 
-      {/* Vraag 1: Bron */}
-      <QuestionSection
-        title="Hoe bent u bij DCQ Bikes terechtgekomen?"
-        error={errors.source}
-      >
-        {SOURCE_OPTIONS.map((option) => (
-          <TouchButton
-            key={option}
-            selected={form.source === option}
-            onClick={() => {
-              setForm((f) => ({ ...f, source: option }));
-              setErrors((e) => ({ ...e, source: undefined }));
-            }}
-            disabled={state === "submitting"}
-          >
-            {option}
-          </TouchButton>
-        ))}
-      </QuestionSection>
-
-      {/* Vraag 2: Website bekeken */}
-      <QuestionSection
-        title="Hebt u vóór uw aankoop onze website bekeken?"
-        error={errors.website}
-      >
-        <div className="col-span-1 grid grid-cols-2 gap-3 sm:col-span-2 lg:col-span-4">
-          <TouchButton
-            variant="yes"
-            selected={form.visitedWebsite === true}
-            onClick={() => {
-              setForm((f) => ({ ...f, visitedWebsite: true }));
-              setErrors((e) => ({ ...e, website: undefined }));
-            }}
-            disabled={state === "submitting"}
-          >
-            Ja
-          </TouchButton>
-          <TouchButton
-            variant="no"
-            selected={form.visitedWebsite === false}
-            onClick={() => {
-              setForm((f) => ({ ...f, visitedWebsite: false }));
-              setErrors((e) => ({ ...e, website: undefined }));
-            }}
-            disabled={state === "submitting"}
-          >
-            Nee
-          </TouchButton>
-        </div>
-      </QuestionSection>
-
-      {/* Vraag 3: Optioneel */}
-      {SHOW_PURCHASE_REASON && (
-        <QuestionSection title="Wat gaf uiteindelijk de doorslag om bij ons te kopen?">
-          {PURCHASE_REASON_OPTIONS.map((option) => (
+      <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 px-4 py-6 md:gap-8 md:px-6 md:py-8 lg:max-w-5xl">
+        <QuestionSection
+          step={1}
+          title="Wat bracht u vandaag bij DCQ Bikes?"
+          error={errors.source}
+        >
+          {SOURCE_OPTIONS.map((option) => (
             <TouchButton
-              key={option}
-              selected={form.purchaseReason === option}
-              onClick={() =>
-                setForm((f) => ({
-                  ...f,
-                  purchaseReason: f.purchaseReason === option ? null : option,
-                }))
-              }
+              key={option.label}
+              icon={option.icon}
+              selected={form.source === option.label}
+              onClick={() => {
+                setForm((f) => ({ ...f, source: option.label }));
+                setErrors((e) => ({ ...e, source: undefined }));
+              }}
               disabled={state === "submitting"}
             >
-              {option}
+              {option.label}
             </TouchButton>
           ))}
         </QuestionSection>
-      )}
 
-      {/* Foutmelding */}
-      {state === "error" && (
-        <ErrorMessage message={errorMessage} onRetry={() => setState("idle")} />
-      )}
-
-      {/* Verzenden */}
-      <div className="pt-2">
-        <TouchButton
-          variant="submit"
-          onClick={handleSubmit}
-          disabled={state === "submitting"}
-          className="min-h-[72px] text-2xl"
+        <QuestionSection
+          step={2}
+          title="Heeft dcqbikes.be geholpen bij uw aankoop?"
+          error={errors.website}
         >
-          {state === "submitting" ? (
-            <span className="flex items-center justify-center gap-3">
-              <LoadingSpinner size="sm" className="border-white border-t-transparent" />
-              Verzenden...
-            </span>
-          ) : (
-            "Verzenden"
-          )}
-        </TouchButton>
+          {WEBSITE_INFLUENCE_OPTIONS.map((option) => (
+            <TouchButton
+              key={option.value}
+              icon={option.icon}
+              selected={form.websiteInfluence === option.value}
+              onClick={() => {
+                setForm((f) => ({ ...f, websiteInfluence: option.value }));
+                setErrors((e) => ({ ...e, website: undefined }));
+              }}
+              disabled={state === "submitting"}
+            >
+              {option.label}
+            </TouchButton>
+          ))}
+        </QuestionSection>
+
+        {state === "error" && (
+          <ErrorMessage message={errorMessage} onRetry={() => setState("idle")} />
+        )}
+
+        <div className="sticky bottom-0 -mx-4 border-t border-gray-200 bg-dcq-gray/95 px-4 py-4 backdrop-blur-sm md:-mx-6 md:px-6">
+          <TouchButton
+            variant="submit"
+            onClick={handleSubmit}
+            disabled={state === "submitting"}
+            className="min-h-[72px] text-xl md:text-2xl"
+          >
+            {state === "submitting" ? (
+              <span className="flex items-center justify-center gap-3">
+                <LoadingSpinner size="sm" className="border-white border-t-transparent" />
+                Verzenden...
+              </span>
+            ) : (
+              "Verzenden"
+            )}
+          </TouchButton>
+        </div>
       </div>
     </div>
   );

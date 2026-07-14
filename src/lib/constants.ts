@@ -1,45 +1,35 @@
-/** Bronopties voor vraag 1 */
+/** Wat de klant vandaag naar DCQ Bikes bracht */
 export const SOURCE_OPTIONS = [
-  "Onze website",
-  "Google",
-  "Facebook / Instagram",
-  "Via vrienden of familie",
-  "Google Reviews",
-  "Ik reed hier voorbij",
-  "Ik ben al klant",
-  "Andere",
+  { label: "dcqbikes.be", icon: "🌐" },
+  { label: "Google / Google Maps", icon: "🔍" },
+  { label: "Facebook / Instagram", icon: "📱" },
+  { label: "Aanbeveling van iemand", icon: "👥" },
+  { label: "Ik kwam hier voorbij", icon: "🚗" },
+  { label: "Ik kende DCQ Bikes al", icon: "🔄" },
+  { label: "Andere", icon: "💬" },
 ] as const;
 
-/** Redenopties voor optionele vraag 3 */
-export const PURCHASE_REASON_OPTIONS = [
-  "Persoonlijk advies",
-  "Prijs",
-  "Service",
-  "Aanbod",
-  "Website",
-  "Ligging",
-  "Andere",
+/** De concrete rol van de website in de aankoop */
+export const WEBSITE_INFLUENCE_OPTIONS = [
+  { label: "Ja, gaf de doorslag", value: "decisive", icon: "🎯" },
+  { label: "Ja, hielp bij mijn keuze", value: "helped", icon: "👍" },
+  { label: "Bekeken, maar geen invloed", value: "no_influence", icon: "👀" },
+  { label: "Niet bekeken", value: "not_visited", icon: "—" },
 ] as const;
 
-export type SourceOption = (typeof SOURCE_OPTIONS)[number];
-export type PurchaseReasonOption = (typeof PURCHASE_REASON_OPTIONS)[number];
+export type SourceOption = (typeof SOURCE_OPTIONS)[number]["label"];
+export type WebsiteInfluence =
+  (typeof WEBSITE_INFLUENCE_OPTIONS)[number]["value"];
 
 /** Duur van het bedankscherm in milliseconden */
 export const THANK_YOU_DURATION_MS = 2000;
 
-/**
- * Optionele vraag 3 in-/uitschakelen via env var.
- * Standaard: uitgeschakeld.
- */
-export const SHOW_PURCHASE_REASON =
-  process.env.NEXT_PUBLIC_SHOW_PURCHASE_REASON === "true";
-
-/** DCQ Bikes kleuren */
+/** DCQ Bikes kleuren (afgestemd op dcqbikes.be) */
 export const COLORS = {
-  red: "#E30613",
-  redDark: "#B8050F",
-  black: "#1A1A1A",
-  white: "#FFFFFF",
-  gray: "#F5F5F5",
-  grayBorder: "#E5E5E5",
+  red: "#ee2726",
+  redDark: "#d41e1d",
+  black: "#010101",
+  white: "#fffefc",
+  gray: "#f9fafb",
+  grayBorder: "#e5e7eb",
 } as const;

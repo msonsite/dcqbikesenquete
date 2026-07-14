@@ -6,6 +6,14 @@ CREATE TABLE IF NOT EXISTS public.survey_answers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   source TEXT NOT NULL,
   visited_website BOOLEAN NOT NULL,
+  website_influence TEXT CHECK (
+    website_influence IS NULL OR website_influence IN (
+      'decisive',
+      'helped',
+      'no_influence',
+      'not_visited'
+    )
+  ),
   purchase_reason TEXT
 );
 

@@ -1,6 +1,13 @@
 import type { SurveyAnswer, DashboardStats } from "@/types/survey";
 import { SOURCE_OPTIONS } from "@/lib/constants";
 
+const INFLUENCE_LABELS: Record<string, string> = {
+  decisive: "Gaf de doorslag",
+  helped: "Hielp bij de keuze",
+  no_influence: "Bekeken, geen invloed",
+  not_visited: "Niet bekeken",
+};
+
 function startOfDay(date: Date): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
@@ -59,6 +66,10 @@ function countByField(
     .sort((a, b) => b.count - a.count);
 }
 
+function percentage(part: number, total: number): number {
+  return total === 0 ? 0 : Math.round((part / total) * 100);
+}
+
 /** Bereken alle dashboard-statistieken uit ruwe antwoorden */
 export function computeDashboardStats(answers: SurveyAnswer[]): DashboardStats {
   const now = new Date();
@@ -74,7 +85,9 @@ export function computeDashboardStats(answers: SurveyAnswer[]): DashboardStats {
   ).length;
 
   const monthlyMap = new Map<string, number>();
+  const monthlyAssistedMap = new Map<string, number>();
   const weeklyMap = new Map<string, number>();
+  const weeklyAssistedMap = new Map<string, number>();
 
   answers.forEach((a) => {
     const date = new Date(a.created_at);
@@ -82,24 +95,80 @@ export function computeDashboardStats(answers: SurveyAnswer[]): DashboardStats {
     monthlyMap.set(monthKey, (monthlyMap.get(monthKey) ?? 0) + 1);
     const weekKey = getWeekKey(date);
     weeklyMap.set(weekKey, (weeklyMap.get(weekKey) ?? 0) + 1);
+
+    if (a.website_influence === "decisive" || a.website_influence === "helped") {
+      monthlyAssistedMap.set(
+        monthKey,
+        (monthlyAssistedMap.get(monthKey) ?? 0) + 1
+      );
+      weeklyAssistedMap.set(
+        weekKey,
+        (weeklyAssistedMap.get(weekKey) ?? 0) + 1
+      );
+    }
   });
 
   const monthlyData = Array.from(monthlyMap.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .slice(-12)
-    .map(([month, count]) => ({ month: formatMonthLabel(month), count }));
+    .map(([month, count]) => ({
+      month: formatMonthLabel(month),
+      count,
+      assisted: monthlyAssistedMap.get(month) ?? 0,
+    }));
 
   const weeklyData = Array.from(weeklyMap.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .slice(-12)
-    .map(([week, count]) => ({ week, count }));
+    .map(([week, count]) => ({
+      week,
+      count,
+      assisted: weeklyAssistedMap.get(week) ?? 0,
+    }));
+
+  const influenceAnswers = answers.filter((answer) => answer.website_influence);
+  const influenceCounts = new Map<string, number>();
+  Object.keys(INFLUENCE_LABELS).forEach((value) => influenceCounts.set(value, 0));
+  influenceAnswers.forEach((answer) => {
+    const value = answer.website_influence!;
+    influenceCounts.set(value, (influenceCounts.get(value) ?? 0) + 1);
+  });
+
+  const websiteInfluencePercentages = Array.from(influenceCounts.entries())
+    .map(([value, count]) => ({
+      name: INFLUENCE_LABELS[value] ?? value,
+      count,
+      value: percentage(count, influenceAnswers.length),
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const websiteAssisted = influenceAnswers.filter(
+    (answer) =>
+      answer.website_influence === "decisive" ||
+      answer.website_influence === "helped"
+  ).length;
+  const websiteSources = answers.filter(
+    (answer) =>
+      answer.source === "dcqbikes.be" || answer.source === "Onze website"
+  ).length;
+  const websiteVisited = answers.filter((answer) => answer.visited_website).length;
 
   return {
     total: answers.length,
     today,
     thisMonth,
-    sourcePercentages: countByField(answers, "source", SOURCE_OPTIONS),
-    websitePercentages: countByField(answers, "visited_website"),
+    websiteVisitedPercentage: percentage(websiteVisited, answers.length),
+    websiteAssistedPercentage: percentage(
+      websiteAssisted,
+      influenceAnswers.length
+    ),
+    websiteSourcePercentage: percentage(websiteSources, answers.length),
+    sourcePercentages: countByField(
+      answers,
+      "source",
+      SOURCE_OPTIONS.map((option) => option.label)
+    ),
+    websiteInfluencePercentages,
     monthlyData,
     weeklyData,
   };

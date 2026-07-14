@@ -38,8 +38,7 @@ cp .env.local.example .env.local
 | Variabele | Beschrijving |
 |-----------|-------------|
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key |
-| `NEXT_PUBLIC_SHOW_PURCHASE_REASON` | `true` om vraag 3 te tonen, anders `false` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase publishable/anon key |
 
 ### 3. Supabase database instellen
 
@@ -145,9 +144,12 @@ Deploy naar [Vercel](https://vercel.com) en koppel je GitHub-repo. Voeg de envir
 
 ## Enquêtevragen
 
-1. **Hoe bent u bij DCQ Bikes terechtgekomen?** (verplicht)
-2. **Hebt u vóór uw aankoop onze website bekeken?** (verplicht)
-3. **Wat gaf uiteindelijk de doorslag om bij ons te kopen?** (optioneel, via env var)
+1. **Wat bracht u vandaag bij DCQ Bikes?** (verplicht)
+2. **Heeft dcqbikes.be geholpen bij uw aankoop?** (verplicht)
+
+De tweede vraag onderscheidt of de website de doorslag gaf, hielp kiezen,
+zonder invloed werd bekeken, of niet werd bekeken. Zo blijft de enquête bij
+twee tikken en meet het dashboard zowel websitebereik als aankoopinvloed.
 
 ## Licentie
 

@@ -71,11 +71,15 @@ export function PercentageChart({ title, data }: PercentageChartProps) {
 
 interface BarChartCardProps {
   title: string;
-  data: { label: string; count: number }[];
-  dataKey?: string;
+  data: { label: string; count: number; assisted?: number }[];
+  showAssisted?: boolean;
 }
 
-export function BarChartCard({ title, data }: BarChartCardProps) {
+export function BarChartCard({
+  title,
+  data,
+  showAssisted = false,
+}: BarChartCardProps) {
   return (
     <div className="rounded-2xl border border-dcq-gray-border bg-white p-6 shadow-sm">
       <h3 className="mb-4 text-lg font-semibold text-dcq-black">{title}</h3>
@@ -88,7 +92,21 @@ export function BarChartCard({ title, data }: BarChartCardProps) {
             <XAxis dataKey="label" tick={{ fontSize: 12 }} />
             <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
             <Tooltip />
-            <Bar dataKey="count" fill="#E30613" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="count"
+              name="Alle antwoorden"
+              fill="#010101"
+              radius={[4, 4, 0, 0]}
+            />
+            {showAssisted && (
+              <Bar
+                dataKey="assisted"
+                name="Website hielp"
+                fill="#ee2726"
+                radius={[4, 4, 0, 0]}
+              />
+            )}
+            {showAssisted && <Legend />}
           </BarChart>
         </ResponsiveContainer>
       )}

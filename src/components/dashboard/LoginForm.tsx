@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
@@ -39,12 +40,14 @@ export function LoginForm() {
         className="w-full max-w-md space-y-6 rounded-2xl border border-dcq-gray-border bg-white p-8 shadow-sm"
       >
         <div className="text-center">
-          <div className="mb-4 inline-block rounded-lg bg-dcq-red px-4 py-1">
-            <span className="text-sm font-bold uppercase tracking-widest text-white">
-              DCQ Bikes
-            </span>
-          </div>
-          <h1 className="text-2xl font-bold text-dcq-black">Dashboard login</h1>
+          <Image
+            src={withBasePath("/images/dcqbikeslogotransparent.png")}
+            alt="DCQ Bikes"
+            width={200}
+            height={60}
+            className="mx-auto mb-4 h-12 w-auto object-contain"
+          />
+          <h1 className="font-heading text-2xl font-bold text-dcq-black">Dashboard login</h1>
         </div>
 
         {error && <ErrorMessage message={error} />}

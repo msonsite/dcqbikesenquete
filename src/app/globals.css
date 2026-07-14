@@ -7,7 +7,7 @@ html {
 }
 
 body {
-  @apply bg-white text-dcq-black font-sans;
+  @apply bg-dcq-gray text-dcq-black font-sans;
   -webkit-user-select: none;
   user-select: none;
   overscroll-behavior: none;
@@ -21,4 +21,10 @@ textarea {
 
 button {
   -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3 {
+  @apply font-heading;
 }
