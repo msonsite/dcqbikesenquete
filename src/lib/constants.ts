@@ -25,7 +25,7 @@ export const WEBSITE_ROLE_OPTIONS = [
  */
 export const SOURCE_OPTIONS = [
   { label: "Google", icon: "🔍" },
-  { label: "Facebook / Instagram", icon: "📱" },
+  { label: "Facebook", icon: "📱" },
   { label: "Reviews", icon: "⭐" },
   { label: "Via familie of vrienden", icon: "👥" },
   { label: "In het voorbijrijden", icon: "🚗" },
@@ -39,6 +39,10 @@ export type WebsiteInfluence =
 
 /** Duur van het bedankscherm in milliseconden */
 export const THANK_YOU_DURATION_MS = 5000;
+
+/** Google Review-pagina (QR-code op bedankscherm linkt hierheen) */
+export const GOOGLE_REVIEW_URL =
+  "https://g.page/r/CUO_D6X2fM0CEB0/review";
 
 /** DCQ Bikes kleuren (afgestemd op dcqbikes.be) */
 export const COLORS = {

@@ -9,6 +9,7 @@ import {
   THANK_YOU_DURATION_MS,
 } from "@/lib/constants";
 import { SurveyHeader } from "./SurveyHeader";
+import { GoogleReviewQr } from "./GoogleReviewQr";
 import { TouchButton } from "./TouchButton";
 import { QuestionSection } from "./QuestionSection";
 import { ThankYouScreen } from "./ThankYouScreen";
@@ -92,14 +93,23 @@ export function SurveyForm() {
   };
 
   if (state === "thankyou") {
-    return <ThankYouScreen />;
+    return (
+      <div className="flex min-h-screen flex-col bg-dcq-gray">
+        <SurveyHeader />
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          <ThankYouScreen />
+          <GoogleReviewQr />
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="flex min-h-screen flex-col bg-dcq-gray">
       <SurveyHeader />
 
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 md:px-6">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 md:px-6">
         {/* Vraag 1 — Website bekeken vóór het bezoek? */}
         <QuestionSection
           step={1}
@@ -180,6 +190,9 @@ export function SurveyForm() {
           <ErrorMessage message={errorMessage} onRetry={() => setState("idle")} />
         )}
 
+        {/* QR compact op kleinere schermen */}
+        <GoogleReviewQr />
+
         <div className="sticky bottom-0 -mx-4 mt-auto border-t border-gray-200 bg-dcq-gray/95 px-4 py-3 backdrop-blur-sm md:-mx-6 md:px-6">
           <TouchButton
             variant="submit"
@@ -197,6 +210,10 @@ export function SurveyForm() {
             )}
           </TouchButton>
         </div>
+        </div>
+
+        {/* QR sidebar op iPad landscape */}
+        <GoogleReviewQr />
       </div>
     </div>
   );
