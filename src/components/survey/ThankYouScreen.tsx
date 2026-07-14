@@ -3,7 +3,7 @@ import { withBasePath } from "@/lib/paths";
 
 export function ThankYouScreen() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center bg-dcq-black px-8 py-12 text-center">
+    <div className="flex flex-1 flex-col items-center justify-center bg-dcq-black px-8 py-12 text-center lg:min-w-0 lg:flex-1">
       <Image
         src={withBasePath("/images/dcqbikeslogotransparent.png")}
         alt="DCQ Bikes"

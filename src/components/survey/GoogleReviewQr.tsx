@@ -1,22 +1,22 @@
 import Image from "next/image";
 import { withBasePath } from "@/lib/paths";
 
-/** Subtiele, altijd zichtbare Google Review QR — één vaste plek rechtsonder. */
+/** Scanbare Google Review QR — vaste sidebar (landscape) of paneel boven verzenden (portrait). */
 export function GoogleReviewQr() {
   return (
     <aside
-      className="pointer-events-none fixed bottom-5 right-5 z-10 flex flex-col items-center rounded-xl border border-gray-200/60 bg-white/80 px-3 py-2.5 shadow-sm backdrop-blur-sm md:bottom-6 md:right-6"
+      className="flex shrink-0 flex-col items-center justify-center border-t border-gray-200 bg-white px-6 py-5 lg:w-52 lg:border-t-0 lg:border-l lg:py-6 xl:w-56"
       aria-label="QR-code voor Google-review"
     >
-      <p className="text-[10px] font-medium tracking-wide text-gray-400 md:text-xs">
+      <p className="mb-3 text-xs font-medium tracking-wide text-gray-400">
         Google-review
       </p>
       <Image
         src={withBasePath("/images/qrcodereviews.png")}
         alt=""
-        width={80}
-        height={80}
-        className="mt-1.5 h-16 w-16 md:h-20 md:w-20"
+        width={160}
+        height={160}
+        className="h-36 w-36 md:h-40 md:w-40"
         aria-hidden
       />
     </aside>

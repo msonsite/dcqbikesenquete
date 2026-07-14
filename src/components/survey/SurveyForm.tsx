@@ -91,13 +91,14 @@ export function SurveyForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-dcq-gray">
+    <div className="flex min-h-screen flex-col bg-dcq-gray">
       <SurveyHeader />
 
-      {state === "thankyou" ? (
-        <ThankYouScreen />
-      ) : (
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 md:px-6">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        {state === "thankyou" ? (
+          <ThankYouScreen />
+        ) : (
+          <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 md:px-6 lg:max-w-none lg:flex-1">
           <QuestionSection
             step={1}
             title="Heeft u dcqbikes.be bekeken vóór uw bezoek?"
@@ -175,7 +176,7 @@ export function SurveyForm() {
             <ErrorMessage message={errorMessage} onRetry={() => setState("idle")} />
           )}
 
-          <div className="sticky bottom-0 -mx-4 mt-auto border-t border-gray-200 bg-dcq-gray/95 px-4 py-3 pr-28 backdrop-blur-sm md:-mx-6 md:px-6 md:pr-32">
+          <div className="sticky bottom-0 -mx-4 mt-auto border-t border-gray-200 bg-dcq-gray/95 px-4 py-3 backdrop-blur-sm md:-mx-6 md:px-6">
             <TouchButton
               variant="submit"
               onClick={handleSubmit}
@@ -192,10 +193,11 @@ export function SurveyForm() {
               )}
             </TouchButton>
           </div>
-        </div>
-      )}
+          </div>
+        )}
 
-      <GoogleReviewQr />
+        <GoogleReviewQr />
+      </div>
     </div>
   );
 }

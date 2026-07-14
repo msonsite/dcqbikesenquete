@@ -24,7 +24,7 @@ export function SurveyHeader() {
             </p>
           </div>
         </div>
-        <span className="rounded-full bg-dcq-red px-3 py-1.5 text-xs font-semibold text-dcq-white md:text-sm">
+        <span className="hidden rounded-full bg-dcq-red px-3 py-1.5 text-xs font-semibold text-dcq-white sm:inline md:text-sm">
           Website vernieuwd
         </span>
       </div>
