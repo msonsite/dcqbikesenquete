@@ -2,8 +2,8 @@ import type { SurveyAnswer, DashboardStats } from "@/types/survey";
 import { SOURCE_OPTIONS } from "@/lib/constants";
 
 const INFLUENCE_LABELS: Record<string, string> = {
-  decisive: "Bracht klant hierheen",
-  helped: "Hielp bij de keuze",
+  decisive: "Bracht klant naar winkel",
+  helped: "Gaf nuttige info vooraf",
   no_influence: "Bekeken, geen invloed",
   not_visited: "Niet bekeken",
 };

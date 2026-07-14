@@ -20,6 +20,10 @@ ALTER TABLE public.survey_answers
   ADD COLUMN IF NOT EXISTS customer_type TEXT,
   ADD COLUMN IF NOT EXISTS website_influence TEXT;
 
+-- 2b. Oude NOT NULL-constraints opheffen (bestaande klanten sturen geen kanaal)
+ALTER TABLE public.survey_answers ALTER COLUMN source DROP NOT NULL;
+ALTER TABLE public.survey_answers ALTER COLUMN purchase_reason DROP NOT NULL;
+
 -- 3. Toegestane waarden afdwingen
 ALTER TABLE public.survey_answers
   DROP CONSTRAINT IF EXISTS survey_answers_customer_type_check;

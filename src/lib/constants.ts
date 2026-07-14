@@ -25,9 +25,9 @@ export const SOURCE_OPTIONS = [
  * Meet zowel bereik (bekeken ja/nee) als impact (doorslag/hulp).
  */
 export const WEBSITE_INFLUENCE_OPTIONS = [
-  { label: "Ja, de website bracht me hierheen", value: "decisive", icon: "🎯" },
-  { label: "Ja, ze hielp mij beslissen", value: "helped", icon: "👍" },
-  { label: "Bekeken, maar geen invloed", value: "no_influence", icon: "👀" },
+  { label: "Ja, daarom kwam ik langs", value: "decisive", icon: "🎯" },
+  { label: "Ja, ik vond er nuttige info", value: "helped", icon: "👍" },
+  { label: "Even bekeken, verder niet", value: "no_influence", icon: "👀" },
   { label: "Niet bekeken", value: "not_visited", icon: "✕" },
 ] as const;
 
