@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DCQ Bikes – Klantenenquête Kiosk
 
-## Getting Started
+Een eenvoudige, moderne kiosk-webapp voor DCQ Bikes om na elke verkoop snel te registreren hoe klanten de winkel hebben gevonden en of de website invloed had op de aankoop.
 
-First, run the development server:
+Gebouwd met **Next.js (App Router)**, **TypeScript**, **Tailwind CSS** en **Supabase**.
+
+## Functies
+
+- **Kiosk-enquête** (`/`) – grote touch-knoppen, geoptimaliseerd voor iPad landscape
+- **Automatisch reset** – na verzending bedankscherm (2 sec) en direct klaar voor de volgende klant
+- **Dashboard** (`/dashboard`) – statistieken, grafieken en CSV-export (alleen voor ingelogde admins)
+- **Row Level Security** – anonieme inserts, alleen admins kunnen data lezen
+
+## Vereisten
+
+- Node.js 18.18+ (20+ aanbevolen voor productie)
+- npm
+- Supabase-account
+
+## Installatie
+
+### 1. Repository klonen en dependencies installeren
+
+```bash
+git clone <repository-url>
+cd dcqbikesenquete
+npm install
+```
+
+### 2. Environment variables
+
+Kopieer het voorbeeldbestand en vul je Supabase-gegevens in:
+
+```bash
+cp .env.local.example .env.local
+```
+
+| Variabele | Beschrijving |
+|-----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/public key |
+| `NEXT_PUBLIC_SHOW_PURCHASE_REASON` | `true` om vraag 3 te tonen, anders `false` |
+
+### 3. Supabase database instellen
+
+1. Open je Supabase-project → **SQL Editor**
+2. Voer het migratiebestand uit: `supabase/migrations/001_survey_answers.sql`
+
+Dit maakt de tabel `survey_answers` aan met RLS-beleid:
+- **INSERT**: toegestaan voor anonieme gebruikers (kiosk)
+- **SELECT**: alleen voor geauthenticeerde admins
+
+### 4. Admin-account aanmaken
+
+1. Ga in Supabase naar **Authentication → Users**
+2. Klik **Add user** en maak een admin-account aan (e-mail + wachtwoord)
+3. Gebruik deze gegevens om in te loggen op `/dashboard/login`
+
+### 5. Development server starten
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) voor de kiosk-enquête.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## iPad kioskmodus
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Open de app in **Safari** op de iPad
+2. Tik op **Delen** → **Voeg toe aan beginscherm**
+3. Open de app vanuit het beginscherm (fullscreen, geen browserbalk)
+4. Zet **Begeleide toegang** aan (Instellingen → Toegankelijkheid) om de iPad te vergrendelen op deze app
 
-## Learn More
+De enquête reset automatisch na elke inzending – geen browser-refresh nodig.
 
-To learn more about Next.js, take a look at the following resources:
+## Projectstructuur
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/
+│   ├── page.tsx              # Kiosk-enquête
+│   ├── layout.tsx            # Root layout + kiosk viewport
+│   └── dashboard/
+│       ├── page.tsx          # Admin dashboard (Server Component)
+│       └── login/page.tsx    # Admin login
+├── components/
+│   ├── survey/               # Enquête-componenten
+│   ├── dashboard/            # Dashboard-componenten
+│   └── ui/                   # Herbruikbare UI
+├── lib/
+│   ├── constants.ts          # Enquête-opties en configuratie
+│   ├── supabase/             # Supabase clients
+│   └── utils/                # Statistieken en CSV-export
+└── types/
+    └── survey.ts             # TypeScript types
+supabase/
+└── migrations/
+    └── 001_survey_answers.sql
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Productie deployen
 
-## Deploy on Vercel
+```bash
+npm run build
+npm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deploy naar [Vercel](https://vercel.com) of een andere Next.js-host. Voeg de environment variables toe in je hosting-dashboard.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Enquêtevragen
+
+1. **Hoe bent u bij DCQ Bikes terechtgekomen?** (verplicht)
+2. **Hebt u vóór uw aankoop onze website bekeken?** (verplicht)
+3. **Wat gaf uiteindelijk de doorslag om bij ons te kopen?** (optioneel, via env var)
+
+## Licentie
+
+Privé project voor DCQ Bikes.
