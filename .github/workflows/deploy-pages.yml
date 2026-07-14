@@ -34,8 +34,11 @@ jobs:
         env:
           NEXT_PUBLIC_BASE_PATH: /dcqbikesenquete
           GITHUB_PAGES: "true"
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # De publishable key is openbaar (staat sowieso in de browser-code);
+          # data blijft beschermd door Row Level Security. Secrets krijgen voorrang
+          # indien ingesteld, anders wordt onderstaande fallback gebruikt.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://vvyglzwbhoxinsifehvy.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_hcKOdXUO6UcSmfLX77Nkxg_qu-R_-Mr' }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
