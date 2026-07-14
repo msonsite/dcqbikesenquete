@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { withBasePath } from "@/lib/paths";
 
-/** Kort bedankscherm in het hoofdgedeelte; QR blijft zichtbaar in de sidebar. */
 export function ThankYouScreen() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center bg-dcq-black px-8 py-12 text-center">
