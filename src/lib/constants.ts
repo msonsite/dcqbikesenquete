@@ -37,7 +37,7 @@ export type WebsiteInfluence =
   (typeof WEBSITE_INFLUENCE_OPTIONS)[number]["value"];
 
 /** Duur van het bedankscherm in milliseconden */
-export const THANK_YOU_DURATION_MS = 2000;
+export const THANK_YOU_DURATION_MS = 4000;
 
 /** DCQ Bikes kleuren (afgestemd op dcqbikes.be) */
 export const COLORS = {
