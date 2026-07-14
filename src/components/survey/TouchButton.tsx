@@ -20,7 +20,7 @@ export function TouchButton({
   icon,
 }: TouchButtonProps) {
   const base =
-    "group min-h-[64px] w-full rounded-2xl border px-5 py-4 text-left text-lg font-semibold transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 select-none touch-manipulation md:min-h-[68px] md:text-xl";
+    "group min-h-[60px] w-full rounded-xl border px-4 py-3 text-left text-base font-semibold transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 select-none touch-manipulation md:text-lg";
 
   const variants = {
     default: selected

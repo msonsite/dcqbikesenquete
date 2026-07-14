@@ -1,22 +1,37 @@
-/** Wat de klant vandaag naar DCQ Bikes bracht */
+/**
+ * Vraag 1 — Nieuwe of bestaande klant?
+ * Segmenteert alle andere data: website-impact telt vooral voor nieuwe klanten.
+ */
+export const CUSTOMER_TYPE_OPTIONS = [
+  { label: "Eerste keer hier", value: "new", icon: "✨" },
+  { label: "Ik was hier al eens", value: "returning", icon: "🔄" },
+] as const;
+
+/**
+ * Vraag 2 (enkel nieuwe klanten) — Hoe heeft u ons leren kennen?
+ * Kanaalattributie: welk marketingkanaal brengt nieuwe klanten binnen.
+ */
 export const SOURCE_OPTIONS = [
-  { label: "dcqbikes.be", icon: "🌐" },
-  { label: "Google / Google Maps", icon: "🔍" },
+  { label: "Onze website", icon: "🌐" },
+  { label: "Google", icon: "🔍" },
   { label: "Facebook / Instagram", icon: "📱" },
-  { label: "Aanbeveling van iemand", icon: "👥" },
-  { label: "Ik kwam hier voorbij", icon: "🚗" },
-  { label: "Ik kende DCQ Bikes al", icon: "🔄" },
-  { label: "Andere", icon: "💬" },
+  { label: "Reviews", icon: "⭐" },
+  { label: "Via familie of vrienden", icon: "👥" },
+  { label: "In het voorbijrijden", icon: "🚗" },
 ] as const;
 
-/** De concrete rol van de website in de aankoop */
+/**
+ * Vraag 3 — Rol van de vernieuwde website bij dit bezoek/aankoop.
+ * Meet zowel bereik (bekeken ja/nee) als impact (doorslag/hulp).
+ */
 export const WEBSITE_INFLUENCE_OPTIONS = [
-  { label: "Ja, gaf de doorslag", value: "decisive", icon: "🎯" },
-  { label: "Ja, hielp bij mijn keuze", value: "helped", icon: "👍" },
+  { label: "Ja, de website bracht me hierheen", value: "decisive", icon: "🎯" },
+  { label: "Ja, ze hielp mij beslissen", value: "helped", icon: "👍" },
   { label: "Bekeken, maar geen invloed", value: "no_influence", icon: "👀" },
-  { label: "Niet bekeken", value: "not_visited", icon: "—" },
+  { label: "Niet bekeken", value: "not_visited", icon: "✕" },
 ] as const;
 
+export type CustomerType = (typeof CUSTOMER_TYPE_OPTIONS)[number]["value"];
 export type SourceOption = (typeof SOURCE_OPTIONS)[number]["label"];
 export type WebsiteInfluence =
   (typeof WEBSITE_INFLUENCE_OPTIONS)[number]["value"];

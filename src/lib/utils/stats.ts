@@ -2,10 +2,15 @@ import type { SurveyAnswer, DashboardStats } from "@/types/survey";
 import { SOURCE_OPTIONS } from "@/lib/constants";
 
 const INFLUENCE_LABELS: Record<string, string> = {
-  decisive: "Gaf de doorslag",
+  decisive: "Bracht klant hierheen",
   helped: "Hielp bij de keuze",
   no_influence: "Bekeken, geen invloed",
   not_visited: "Niet bekeken",
+};
+
+const CUSTOMER_TYPE_LABELS: Record<string, string> = {
+  new: "Nieuwe klant",
+  returning: "Bestaande klant",
 };
 
 function startOfDay(date: Date): Date {
@@ -147,24 +152,53 @@ export function computeDashboardStats(answers: SurveyAnswer[]): DashboardStats {
       answer.website_influence === "decisive" ||
       answer.website_influence === "helped"
   ).length;
-  const websiteSources = answers.filter(
-    (answer) =>
-      answer.source === "dcqbikes.be" || answer.source === "Onze website"
-  ).length;
   const websiteVisited = answers.filter((answer) => answer.visited_website).length;
+
+  // Klanttype-segmentatie
+  const customerTypeCounts = new Map<string, number>();
+  Object.keys(CUSTOMER_TYPE_LABELS).forEach((value) =>
+    customerTypeCounts.set(value, 0)
+  );
+  answers.forEach((answer) => {
+    if (answer.customer_type) {
+      customerTypeCounts.set(
+        answer.customer_type,
+        (customerTypeCounts.get(answer.customer_type) ?? 0) + 1
+      );
+    }
+  });
+  const customerTypePercentages = Array.from(customerTypeCounts.entries())
+    .map(([value, count]) => ({
+      name: CUSTOMER_TYPE_LABELS[value] ?? value,
+      count,
+      value: percentage(count, answers.length),
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  const newCustomers = answers.filter((a) => a.customer_type === "new");
+  // Aandeel nieuwe klanten dat door de website is aangetrokken of overtuigd
+  const websiteDrivenNew = newCustomers.filter(
+    (a) =>
+      a.website_influence === "decisive" || a.website_influence === "helped"
+  ).length;
 
   return {
     total: answers.length,
     today,
     thisMonth,
+    newCustomerPercentage: percentage(newCustomers.length, answers.length),
     websiteVisitedPercentage: percentage(websiteVisited, answers.length),
     websiteAssistedPercentage: percentage(
       websiteAssisted,
       influenceAnswers.length
     ),
-    websiteSourcePercentage: percentage(websiteSources, answers.length),
+    websiteDrivenNewPercentage: percentage(
+      websiteDrivenNew,
+      newCustomers.length
+    ),
+    customerTypePercentages,
     sourcePercentages: countByField(
-      answers,
+      newCustomers,
       "source",
       SOURCE_OPTIONS.map((option) => option.label)
     ),

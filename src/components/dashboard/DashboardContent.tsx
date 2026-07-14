@@ -51,33 +51,38 @@ export function DashboardContent({ stats, answers }: DashboardContentProps) {
 
       <main className="mx-auto max-w-7xl space-y-8 px-6 py-8">
         {/* Kerncijfers */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <StatCard title="Totaal antwoorden" value={stats.total} />
           <StatCard title="Vandaag" value={stats.today} />
           <StatCard title="Deze maand" value={stats.thisMonth} />
           <StatCard
+            title="Nieuwe klanten"
+            value={`${stats.newCustomerPercentage}%`}
+          />
+          <StatCard
             title="Website bezocht"
             value={`${stats.websiteVisitedPercentage}%`}
+            subtitle="Bekeek site vóór bezoek"
           />
           <StatCard
-            title="Website hielp"
-            value={`${stats.websiteAssistedPercentage}%`}
-            subtitle="Hielp kiezen of gaf doorslag"
-          />
-          <StatCard
-            title="Website als aanleiding"
-            value={`${stats.websiteSourcePercentage}%`}
+            title="Website → nieuwe klant"
+            value={`${stats.websiteDrivenNewPercentage}%`}
+            subtitle="Nieuwe klanten overtuigd door site"
           />
         </div>
 
         {/* Percentages */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <PercentageChart
-            title="Percentage per bron"
+            title="Nieuwe vs. bestaande klanten"
+            data={stats.customerTypePercentages}
+          />
+          <PercentageChart
+            title="Kanaal nieuwe klanten"
             data={stats.sourcePercentages}
           />
           <PercentageChart
-            title="Rol van dcqbikes.be in de aankoop"
+            title="Rol van dcqbikes.be"
             data={stats.websiteInfluencePercentages}
           />
         </div>

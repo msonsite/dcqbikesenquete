@@ -5,19 +5,19 @@ export function exportToCsv(answers: SurveyAnswer[], filename = "dcq-enquete.csv
   const headers = [
     "id",
     "created_at",
+    "customer_type",
     "source",
     "visited_website",
     "website_influence",
-    "purchase_reason",
   ];
   const rows = answers.map((a) =>
     [
       a.id,
       a.created_at,
-      `"${a.source.replace(/"/g, '""')}"`,
+      a.customer_type ?? "",
+      a.source ? `"${a.source.replace(/"/g, '""')}"` : "",
       a.visited_website ? "Ja" : "Nee",
       a.website_influence ?? "",
-      a.purchase_reason ? `"${a.purchase_reason.replace(/"/g, '""')}"` : "",
     ].join(",")
   );
 
