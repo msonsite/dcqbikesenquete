@@ -8,8 +8,9 @@ Gebouwd met **Next.js (App Router)**, **TypeScript**, **Tailwind CSS** en **Supa
 
 - **Kiosk-enquête** (`/`) – grote touch-knoppen, geoptimaliseerd voor iPad landscape
 - **Automatisch reset** – na verzending bedankscherm (2 sec) en direct klaar voor de volgende klant
-- **Dashboard** (`/dashboard`) – statistieken, grafieken en CSV-export (alleen voor ingelogde admins)
-- **Row Level Security** – anonieme inserts, alleen admins kunnen data lezen
+- **Row Level Security** – alleen anonieme inserts vanuit de kiosk
+
+De antwoorden bekijk je rechtstreeks in je Supabase-project (**Table Editor → `survey_answers`**), waar je ook naar CSV kunt exporteren.
 
 ## Vereisten
 
@@ -43,19 +44,12 @@ cp .env.local.example .env.local
 ### 3. Supabase database instellen
 
 1. Open je Supabase-project → **SQL Editor**
-2. Voer het migratiebestand uit: `supabase/migrations/001_survey_answers.sql`
+2. Voer `supabase/schema.sql` uit (idempotent, veilig om opnieuw uit te voeren)
 
 Dit maakt de tabel `survey_answers` aan met RLS-beleid:
 - **INSERT**: toegestaan voor anonieme gebruikers (kiosk)
-- **SELECT**: alleen voor geauthenticeerde admins
 
-### 4. Admin-account aanmaken
-
-1. Ga in Supabase naar **Authentication → Users**
-2. Klik **Add user** en maak een admin-account aan (e-mail + wachtwoord)
-3. Gebruik deze gegevens om in te loggen op `/dashboard/login`
-
-### 5. Development server starten
+### 4. Development server starten
 
 ```bash
 npm run dev
@@ -78,32 +72,26 @@ De enquête reset automatisch na elke inzending – geen browser-refresh nodig.
 src/
 ├── app/
 │   ├── page.tsx              # Kiosk-enquête
-│   ├── layout.tsx            # Root layout + kiosk viewport
-│   └── dashboard/
-│       ├── page.tsx          # Admin dashboard (Server Component)
-│       └── login/page.tsx    # Admin login
+│   └── layout.tsx            # Root layout + kiosk viewport
 ├── components/
 │   ├── survey/               # Enquête-componenten
-│   ├── dashboard/            # Dashboard-componenten
 │   └── ui/                   # Herbruikbare UI
 ├── lib/
 │   ├── constants.ts          # Enquête-opties en configuratie
-│   ├── supabase/             # Supabase clients
-│   └── utils/                # Statistieken en CSV-export
+│   └── supabase/             # Supabase clients
 └── types/
     └── survey.ts             # TypeScript types
 supabase/
-└── migrations/
-    └── 001_survey_answers.sql
+└── schema.sql                # Volledig databaseschema
 ```
 
 ## Productie deployen (GitHub Pages → msonsite.be/dcqbikesenquete)
 
 GitHub toont standaard enkel de **README** — de Next.js-app moet eerst gebouwd worden via GitHub Actions.
 
-### 1. Secrets instellen in GitHub
+### 1. Supabase-gegevens
 
-Ga naar **github.com/msonsite/dcqbikesenquete → Settings → Secrets and variables → Actions** en voeg toe:
+De workflow `.github/workflows/deploy-pages.yml` bevat de publishable key als fallback (die is openbaar; data blijft beschermd door RLS). Wil je andere waarden, stel dan repository-secrets in via **Settings → Secrets and variables → Actions**:
 
 | Secret | Waarde |
 |--------|--------|
@@ -114,14 +102,13 @@ Ga naar **github.com/msonsite/dcqbikesenquete → Settings → Secrets and varia
 
 1. **Settings → Pages**
 2. Bij **Build and deployment → Source**: kies **GitHub Actions** (niet "Deploy from a branch")
-3. Push de code naar `main` — de workflow `.github/workflows/deploy-pages.yml` bouwt en deployt automatisch
+3. Push de code naar `main` — de workflow bouwt en deployt automatisch
 
 ### 3. URL
 
 Na een geslaagde deploy:
 
 - **Enquête:** https://msonsite.be/dcqbikesenquete/
-- **Dashboard:** https://msonsite.be/dcqbikesenquete/dashboard/login
 
 ### Lokaal testen met hetzelfde pad
 
@@ -131,17 +118,6 @@ npx serve out
 # Open http://localhost:3000/dcqbikesenquete/
 ```
 
-### Alternatief: Vercel
-
-Voor eenvoudiger hosting (subdomein `dcqbikesenquete.msonsite.be`):
-
-```bash
-npm run build
-npm start
-```
-
-Deploy naar [Vercel](https://vercel.com) en koppel je GitHub-repo. Voeg de environment variables toe in het Vercel-dashboard.
-
 ## Enquêtevragen
 
 1. **Wat bracht u vandaag bij DCQ Bikes?** (verplicht)
@@ -149,7 +125,7 @@ Deploy naar [Vercel](https://vercel.com) en koppel je GitHub-repo. Voeg de envir
 
 De tweede vraag onderscheidt of de website de doorslag gaf, hielp kiezen,
 zonder invloed werd bekeken, of niet werd bekeken. Zo blijft de enquête bij
-twee tikken en meet het dashboard zowel websitebereik als aankoopinvloed.
+twee tikken en meet je zowel websitebereik als aankoopinvloed.
 
 ## Licentie
 
