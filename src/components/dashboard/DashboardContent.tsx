@@ -5,6 +5,7 @@ import { StatCard } from "./StatCard";
 import { PercentageChart, BarChartCard } from "./Charts";
 import { ExportButton } from "./ExportButton";
 import type { DashboardStats, SurveyAnswer } from "@/types/survey";
+import { withBasePath } from "@/lib/paths";
 
 interface DashboardContentProps {
   stats: DashboardStats;
@@ -15,7 +16,7 @@ export function DashboardContent({ stats, answers }: DashboardContentProps) {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    window.location.href = "/dashboard/login";
+    window.location.href = withBasePath("/dashboard/login");
   };
 
   return (

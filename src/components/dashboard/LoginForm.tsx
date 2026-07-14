@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { withBasePath } from "@/lib/paths";
 
 export function LoginForm() {
   const [email, setEmail] = useState("");
@@ -28,7 +29,7 @@ export function LoginForm() {
       return;
     }
 
-    window.location.href = "/dashboard";
+    window.location.href = withBasePath("/dashboard");
   };
 
   return (

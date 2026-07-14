@@ -98,14 +98,50 @@ supabase/
     └── 001_survey_answers.sql
 ```
 
-## Productie deployen
+## Productie deployen (GitHub Pages → msonsite.be/dcqbikesenquete)
+
+GitHub toont standaard enkel de **README** — de Next.js-app moet eerst gebouwd worden via GitHub Actions.
+
+### 1. Secrets instellen in GitHub
+
+Ga naar **github.com/msonsite/dcqbikesenquete → Settings → Secrets and variables → Actions** en voeg toe:
+
+| Secret | Waarde |
+|--------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Je Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Je publishable/anon key |
+
+### 2. GitHub Pages instellen
+
+1. **Settings → Pages**
+2. Bij **Build and deployment → Source**: kies **GitHub Actions** (niet "Deploy from a branch")
+3. Push de code naar `main` — de workflow `.github/workflows/deploy-pages.yml` bouwt en deployt automatisch
+
+### 3. URL
+
+Na een geslaagde deploy:
+
+- **Enquête:** https://msonsite.be/dcqbikesenquete/
+- **Dashboard:** https://msonsite.be/dcqbikesenquete/dashboard/login
+
+### Lokaal testen met hetzelfde pad
+
+```bash
+npm run build:pages
+npx serve out
+# Open http://localhost:3000/dcqbikesenquete/
+```
+
+### Alternatief: Vercel
+
+Voor eenvoudiger hosting (subdomein `dcqbikesenquete.msonsite.be`):
 
 ```bash
 npm run build
 npm start
 ```
 
-Deploy naar [Vercel](https://vercel.com) of een andere Next.js-host. Voeg de environment variables toe in je hosting-dashboard.
+Deploy naar [Vercel](https://vercel.com) en koppel je GitHub-repo. Voeg de environment variables toe in het Vercel-dashboard.
 
 ## Enquêtevragen
 
