@@ -3,9 +3,9 @@
 import { useCallback, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
-  CUSTOMER_TYPE_OPTIONS,
+  VISITED_WEBSITE_OPTIONS,
+  WEBSITE_ROLE_OPTIONS,
   SOURCE_OPTIONS,
-  WEBSITE_INFLUENCE_OPTIONS,
   THANK_YOU_DURATION_MS,
 } from "@/lib/constants";
 import { SurveyHeader } from "./SurveyHeader";
@@ -19,23 +19,23 @@ import type { SurveyFormData } from "@/types/survey";
 type FormState = "idle" | "submitting" | "thankyou" | "error";
 
 const initialForm: SurveyFormData = {
-  customerType: null,
-  source: null,
+  visitedWebsite: null,
   websiteInfluence: null,
+  source: null,
 };
 
 export function SurveyForm() {
   const [form, setForm] = useState<SurveyFormData>(initialForm);
   const [errors, setErrors] = useState<{
-    customerType?: string;
+    visited?: string;
+    role?: string;
     source?: string;
-    website?: string;
   }>({});
   const [state, setState] = useState<FormState>("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Vraag 2 (kanaal) is enkel relevant voor nieuwe klanten
-  const isNewCustomer = form.customerType === "new";
+  const hasVisited = form.visitedWebsite === true;
+  const notVisited = form.visitedWebsite === false;
 
   const resetForm = useCallback(() => {
     setForm(initialForm);
@@ -47,14 +47,12 @@ export function SurveyForm() {
   const validate = (): boolean => {
     const newErrors: typeof errors = {};
 
-    if (!form.customerType) {
-      newErrors.customerType = "Selecteer alstublieft een optie.";
-    }
-    if (isNewCustomer && !form.source) {
-      newErrors.source = "Selecteer alstublieft hoe u ons leerde kennen.";
-    }
-    if (!form.websiteInfluence) {
-      newErrors.website = "Selecteer alstublieft een optie.";
+    if (form.visitedWebsite === null) {
+      newErrors.visited = "Selecteer alstublieft een optie.";
+    } else if (hasVisited && !form.websiteInfluence) {
+      newErrors.role = "Selecteer alstublieft een optie.";
+    } else if (notVisited && !form.source) {
+      newErrors.source = "Selecteer alstublieft een optie.";
     }
 
     setErrors(newErrors);
@@ -70,11 +68,12 @@ export function SurveyForm() {
     try {
       const supabase = createClient();
       const { error } = await supabase.from("survey_answers").insert({
-        customer_type: form.customerType!,
-        // Kanaal enkel bewaren voor nieuwe klanten
-        source: isNewCustomer ? form.source : null,
-        visited_website: form.websiteInfluence !== "not_visited",
-        website_influence: form.websiteInfluence!,
+        customer_type: null,
+        // Kanaal enkel bij bezoekers die de website NIET bekeken hebben
+        source: notVisited ? form.source : null,
+        visited_website: hasVisited,
+        // Rol van de website, of "not_visited" wanneer ze niet bekeken werd
+        website_influence: hasVisited ? form.websiteInfluence! : "not_visited",
         purchase_reason: null,
       });
 
@@ -96,34 +95,31 @@ export function SurveyForm() {
     return <ThankYouScreen />;
   }
 
-  // Stapnummers lopen door afhankelijk van conditionele vraag
-  const websiteStep = isNewCustomer ? 3 : 2;
-
   return (
     <div className="flex min-h-screen flex-col bg-dcq-gray">
       <SurveyHeader />
 
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 py-4 md:px-6">
-        {/* Vraag 1 — Nieuwe of bestaande klant */}
+        {/* Vraag 1 — Website bekeken vóór het bezoek? */}
         <QuestionSection
           step={1}
-          title="Bent u hier voor het eerst?"
-          error={errors.customerType}
+          title="Heeft u dcqbikes.be bekeken vóór uw bezoek?"
+          subtitle="Onze website kreeg onlangs een volledig vernieuwde look."
+          error={errors.visited}
           compact
         >
-          {CUSTOMER_TYPE_OPTIONS.map((option) => (
+          {VISITED_WEBSITE_OPTIONS.map((option) => (
             <TouchButton
-              key={option.value}
+              key={String(option.value)}
               icon={option.icon}
-              selected={form.customerType === option.value}
+              variant={option.value ? "yes" : "no"}
+              selected={form.visitedWebsite === option.value}
               onClick={() => {
-                setForm((f) => ({
-                  ...f,
-                  customerType: option.value,
-                  // Reset kanaal wanneer men naar bestaande klant wisselt
-                  source: option.value === "new" ? f.source : null,
+                setForm(() => ({
+                  ...initialForm,
+                  visitedWebsite: option.value,
                 }));
-                setErrors((e) => ({ ...e, customerType: undefined }));
+                setErrors({});
               }}
               disabled={state === "submitting"}
             >
@@ -132,11 +128,35 @@ export function SurveyForm() {
           ))}
         </QuestionSection>
 
-        {/* Vraag 2 — Kanaal (enkel nieuwe klanten) */}
-        {isNewCustomer && (
+        {/* Vraag 2a — Rol van de website (enkel indien bekeken) */}
+        {hasVisited && (
           <QuestionSection
             step={2}
-            title="Hoe heeft u DCQ Bikes leren kennen?"
+            title="Welke rol speelde de website in uw bezoek?"
+            error={errors.role}
+          >
+            {WEBSITE_ROLE_OPTIONS.map((option) => (
+              <TouchButton
+                key={option.value}
+                icon={option.icon}
+                selected={form.websiteInfluence === option.value}
+                onClick={() => {
+                  setForm((f) => ({ ...f, websiteInfluence: option.value }));
+                  setErrors((e) => ({ ...e, role: undefined }));
+                }}
+                disabled={state === "submitting"}
+              >
+                {option.label}
+              </TouchButton>
+            ))}
+          </QuestionSection>
+        )}
+
+        {/* Vraag 2b — Kanaal (enkel indien niet bekeken) */}
+        {notVisited && (
+          <QuestionSection
+            step={2}
+            title="Hoe heeft u ons dan gevonden?"
             error={errors.source}
           >
             {SOURCE_OPTIONS.map((option) => (
@@ -155,29 +175,6 @@ export function SurveyForm() {
             ))}
           </QuestionSection>
         )}
-
-        {/* Vraag 3 — Rol van de vernieuwde website */}
-        <QuestionSection
-          step={websiteStep}
-          title="Heeft onze nieuwe website meegespeeld?"
-          subtitle="dcqbikes.be kreeg onlangs een volledig vernieuwde look."
-          error={errors.website}
-        >
-          {WEBSITE_INFLUENCE_OPTIONS.map((option) => (
-            <TouchButton
-              key={option.value}
-              icon={option.icon}
-              selected={form.websiteInfluence === option.value}
-              onClick={() => {
-                setForm((f) => ({ ...f, websiteInfluence: option.value }));
-                setErrors((e) => ({ ...e, website: undefined }));
-              }}
-              disabled={state === "submitting"}
-            >
-              {option.label}
-            </TouchButton>
-          ))}
-        </QuestionSection>
 
         {state === "error" && (
           <ErrorMessage message={errorMessage} onRetry={() => setState("idle")} />

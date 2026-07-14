@@ -120,12 +120,21 @@ npx serve out
 
 ## Enquêtevragen
 
-1. **Wat bracht u vandaag bij DCQ Bikes?** (verplicht)
-2. **Heeft dcqbikes.be geholpen bij uw aankoop?** (verplicht)
+De enquête gebruikt een slimme vertakking, zodat elke vraag logisch is en er nooit
+tegenstrijdige antwoorden mogelijk zijn. Altijd twee tikken:
 
-De tweede vraag onderscheidt of de website de doorslag gaf, hielp kiezen,
-zonder invloed werd bekeken, of niet werd bekeken. Zo blijft de enquête bij
-twee tikken en meet je zowel websitebereik als aankoopinvloed.
+1. **Heeft u dcqbikes.be bekeken vóór uw bezoek?** — Ja / Nee
+2. Afhankelijk van het antwoord:
+   - **Ja → Welke rol speelde de website?** (overtuigde me om langs te komen / hielp bij mijn keuze / geen echte rol)
+   - **Nee → Hoe heeft u ons dan gevonden?** (Google / Facebook / Instagram / Reviews / via familie of vrienden / in het voorbijrijden / ik ben al klant)
+
+Zo meet je in één oogopslag het **bereik** van de vernieuwde website (bekeken ja/nee),
+de **impact** ervan op wie ze wél bekeek, en het **kanaal** van wie ze niet bekeek.
+
+Antwoorden worden opgeslagen in `survey_answers`:
+- `visited_website` (boolean) — vraag 1
+- `website_influence` (`decisive` / `helped` / `no_influence` / `not_visited`) — vraag 2a (of `not_visited` bij Nee)
+- `source` (tekst) — vraag 2b (leeg wanneer de website wél bekeken werd)
 
 ## Licentie
 

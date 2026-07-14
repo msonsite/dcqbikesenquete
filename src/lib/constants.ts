@@ -1,40 +1,41 @@
 /**
- * Vraag 1 — Nieuwe of bestaande klant?
- * Segmenteert alle andere data: website-impact telt vooral voor nieuwe klanten.
+ * Vraag 1 — Heeft de klant dcqbikes.be bekeken vóór het bezoek?
+ * Kernvraag: meet het bereik van de vernieuwde website. Splitst de flow:
+ *  - Ja  -> vraag naar de rol van de website (impact)
+ *  - Nee -> vraag via welk kanaal ze ons dan gevonden hebben
  */
-export const CUSTOMER_TYPE_OPTIONS = [
-  { label: "Eerste keer hier", value: "new", icon: "✨" },
-  { label: "Ik was hier al eens", value: "returning", icon: "🔄" },
+export const VISITED_WEBSITE_OPTIONS = [
+  { label: "Ja", value: true, icon: "🌐" },
+  { label: "Nee", value: false, icon: "✕" },
 ] as const;
 
 /**
- * Vraag 2 (enkel nieuwe klanten) — Hoe heeft u ons leren kennen?
- * Kanaalattributie: welk marketingkanaal brengt nieuwe klanten binnen.
+ * Vraag 2a (enkel als de website bekeken werd) — Welke rol speelde ze?
+ * Meet de impact van dcqbikes.be op het bezoek/de aankoop.
+ */
+export const WEBSITE_ROLE_OPTIONS = [
+  { label: "Ze overtuigde me om langs te komen", value: "decisive", icon: "🎯" },
+  { label: "Ze hielp bij mijn keuze", value: "helped", icon: "👍" },
+  { label: "Eigenlijk geen echte rol", value: "no_influence", icon: "🤷" },
+] as const;
+
+/**
+ * Vraag 2b (enkel als de website NIET bekeken werd) — Hoe vond de klant ons?
+ * Kanaalattributie voor bezoekers die niet via de website binnenkwamen.
  */
 export const SOURCE_OPTIONS = [
-  { label: "Onze website", icon: "🌐" },
   { label: "Google", icon: "🔍" },
   { label: "Facebook / Instagram", icon: "📱" },
   { label: "Reviews", icon: "⭐" },
   { label: "Via familie of vrienden", icon: "👥" },
   { label: "In het voorbijrijden", icon: "🚗" },
+  { label: "Ik ben hier al klant", icon: "🔄" },
 ] as const;
 
-/**
- * Vraag 3 — Rol van de vernieuwde website bij dit bezoek/aankoop.
- * Meet zowel bereik (bekeken ja/nee) als impact (doorslag/hulp).
- */
-export const WEBSITE_INFLUENCE_OPTIONS = [
-  { label: "Ja, daarom kwam ik langs", value: "decisive", icon: "🎯" },
-  { label: "Ja, ik vond er nuttige info", value: "helped", icon: "👍" },
-  { label: "Even bekeken, verder niet", value: "no_influence", icon: "👀" },
-  { label: "Niet bekeken", value: "not_visited", icon: "✕" },
-] as const;
-
-export type CustomerType = (typeof CUSTOMER_TYPE_OPTIONS)[number]["value"];
 export type SourceOption = (typeof SOURCE_OPTIONS)[number]["label"];
 export type WebsiteInfluence =
-  (typeof WEBSITE_INFLUENCE_OPTIONS)[number]["value"];
+  | (typeof WEBSITE_ROLE_OPTIONS)[number]["value"]
+  | "not_visited";
 
 /** Duur van het bedankscherm in milliseconden */
 export const THANK_YOU_DURATION_MS = 5000;

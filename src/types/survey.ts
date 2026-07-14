@@ -9,7 +9,10 @@ export interface SurveyAnswer {
 }
 
 export interface SurveyFormData {
-  customerType: string | null;
-  source: string | null;
+  /** Vraag 1: heeft de klant dcqbikes.be bekeken vóór het bezoek? */
+  visitedWebsite: boolean | null;
+  /** Vraag 2a (indien bekeken): rol van de website (decisive/helped/no_influence) */
   websiteInfluence: string | null;
+  /** Vraag 2b (indien niet bekeken): via welk kanaal gevonden */
+  source: string | null;
 }
